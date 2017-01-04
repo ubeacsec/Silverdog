@@ -1,0 +1,35 @@
+{
+  "name": "SilverDog",
+  "description": "Filters inaudible beacons used for device tracking",
+  "version": "1.0",
+  "background": { "scripts": ["background.js"] },
+  "browser_action": {
+      "name": "Enable/Disable ultrasound filtering"
+  },
+  
+  "options_ui": {
+    "page": "options.html"
+  },
+  
+  "content_scripts": [
+        {
+        "matches": [
+            "http://*/*",
+            "https://*/*"
+            ],
+		//"exclude_matches": ["*://*.youtube.com/*"],
+			
+        "js": ["content.js"],
+        "run_at": "document_end",
+        "all_frames": true
+        }
+    ],
+  "permissions": [
+          "storage"
+  ],
+  
+   "icons": { "128": "icon.png" },
+  
+  "manifest_version": 2,
+  "web_accessible_resources": ["intercept.js"]
+}

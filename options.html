@@ -1,0 +1,67 @@
+<html>
+  <head>
+    <title>uBeacon Filtering Options</title>
+	<link rel="stylesheet" type="text/css" href="options.css">
+	<script src="options.js" defer></script>
+  </head>
+  
+ 
+  <body>
+ 	<form>
+		<ul class="form-style-1">
+			<li>
+				<h3>Filter Settings</h3>
+			</li>
+			<li>
+				<label>Filter Type:</label>
+				<select name="type" id="type">
+					<option value="notch">Notch</option>
+					<option value="lowpass">Lowpass</option>
+					<option value="highpass">Highpass</option>
+					<option value="bandpass">Bandpass</option>
+					<option value="lowshelf">Lowshelf</option>
+					<option value="highshelf">Highshelf</option>
+					<option value="peaking">Peaking</option>
+					<option value="allpass">Allpass</option>
+				</select>
+				<!--<input type="submit" class="info" value="Info"/>-->
+				<!--<span class="label label-info" id="filterInfo" onclick="refreshFilterType();">Info</span>-->
+			</li>
+		
+			<li>
+				<label>Frequency:</label>
+				<input type="text" name="freq" id="freq"><br>
+			</li>
+			
+			<li>
+			<label>Gain:</label>
+			<input type="text" name="gain" id="gain"><br>
+			</li>
+			
+			<li>
+				<label>Q:</label>
+				<input type="text" name="q" id="q"><br>
+			<li>
+
+			<li>
+			<a href="https://developer.mozilla.org/el/docs/Web/API/BiquadFilterNode">Filter Documentation 1</a> </p>
+			<a href="http://webaudio.github.io/web-audio-api/#the-biquadfilternode-interface">Filter Documentation 2</a></p>
+			</li>
+			
+			<li>
+				<input type="submit" class="submit" value="Save"/>
+				<input type="submit" class="reset" value="Reset"/>
+			</li>
+			</br>
+			<li>
+				<label>License</label>
+			</li>
+			<li>
+				This extension is a Proof-of-Concept implementation, and it is released under
+				the <a href="http://ubeacsec.org/LICENSE.txt">Apache 2.0</a> license.
+			</li>
+			
+		</ul>
+	</form>
+  </body>
+</html>
