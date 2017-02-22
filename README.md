@@ -1,6 +1,9 @@
 # Silverdog
 A PoC chrome extension that filters ultrasonic frequencies out.
 
+![Silverdog](mavroud.is/images/outstored/dog.png)
+
+
 
 The extension is released under the Apache 2.0 license. 
 
