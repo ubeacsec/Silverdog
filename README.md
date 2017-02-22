@@ -1,7 +1,7 @@
 # Silverdog
 A PoC chrome extension that filters ultrasonic frequencies out.
 
-![Silverdog](mavroud.is/images/outstored/dog.png)
+![Silverdog](https://mavroud.is/images/outstored/dog.png)
 
 
 
