@@ -1,18 +1,18 @@
 var active = true;
 
 function setIcon() {
-  if (active === false) {
-    chrome.browserAction.setIcon({ path: 'icon_disabled.png' });
-  } else if (active === true) {
+  if (active) {
     chrome.browserAction.setIcon({ path: 'icon_enabled.png' });
+  } else {
+    chrome.browserAction.setIcon({ path: 'icon_disabled.png' });
   }
 }
 
 function changeState() {
-  if (active === false) {
-    active = true;
-  } else if (active === true) {
+  if (active) {
     active = false;
+  } else {
+    active = true;
   }
 
   setIcon();

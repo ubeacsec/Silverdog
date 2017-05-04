@@ -1,22 +1,21 @@
 chrome
   .runtime
   .sendMessage({ msg: 'getStatus' }, function (response) {
-    if (response.status === true) {
+    if (response.status) {
       var storage = chrome.storage.local;
       storage.get(['type', 'freq', 'q', 'gain'], function (items) {
 
         if (items.type) {
           type = items.type;
         } else {
-          type = 'highshelf'
+          type = 'highshelf';
         }
 
         if (items.freq) {
           freq = items.freq;
         } else {
-          freq = '17999'
+          freq = '17999';
         }
-
 
         if (items.q) {
           q = items.q;
@@ -45,7 +44,6 @@ chrome
       });
 
       var s = document.createElement('script');
-
       s.src = chrome.extension.getURL('intercept.js');
       s.onload = function () {
         this.parentNode.removeChild(this);
