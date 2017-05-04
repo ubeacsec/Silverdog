@@ -1,7 +1,7 @@
 chrome
   .runtime
   .sendMessage({ msg: 'getStatus' }, function (response) {
-    if (response.status == true) {
+    if (response.status === true) {
       var storage = chrome.storage.local;
       storage.get(['type', 'freq', 'q', 'gain'], function (items) {
 
