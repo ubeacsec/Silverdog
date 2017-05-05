@@ -1,4 +1,4 @@
-var isEnabled = false;
+let isEnabled = false;
 
 function toggleState() {
   isEnabled = !isEnabled;
