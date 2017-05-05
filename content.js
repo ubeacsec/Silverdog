@@ -5,29 +5,10 @@ chrome
       var storage = chrome.storage.local;
       storage.get(['type', 'freq', 'q', 'gain'], function (items) {
 
-        if (items.type) {
-          type = items.type;
-        } else {
-          type = 'highshelf';
-        }
-
-        if (items.freq) {
-          freq = items.freq;
-        } else {
-          freq = '17999';
-        }
-
-        if (items.q) {
-          q = items.q;
-        } else {
-          q = '0';
-        }
-
-        if (items.gain) {
-          gain = items.gain;
-        } else {
-          gain = '-70';
-        }
+        type = items.type || 'highshelf';
+        freq = items.freq || '17999';
+        q = items.q || '0';
+        gain = items.gain || '-70';
 
         var actualCode = [
           'var st_type ="' + type + '"',
