@@ -1,3 +1,13 @@
+function createScript(property, source) {
+  let scriptElement = document.createElement('script');
+  scriptElement['property'] = source;
+  return scriptElement;
+}
+
+function injectScript(script) {
+  (document.head || document.documentElement).appendChild(script);
+}
+
 chrome
   .runtime
   .sendMessage({ msg: 'getStatus' }, function (response) {
@@ -18,18 +28,15 @@ chrome
           console.log('Settings loaded...');
         `;
 
-        let script = document.createElement('script');
-        script.textContent = actualCode;
-        (document.head || document.documentElement).appendChild(script);
+        let script = createScript('textConetent', actualCode);
+        injectScript(script);
         script.parentNode.removeChild(script);
       });
 
-      let s = document.createElement('script');
-      s.src = chrome.extension.getURL('intercept.js');
-      s.onload = function () {
+      let script = createScript('src', chrome.extension.getURL('intercept.js'));
+      script.onload = function () {
         this.parentNode.removeChild(this);
       };
-
-      (document.head || document.documentElement).appendChild(s);
+      injectScript(script);
     }
   });
