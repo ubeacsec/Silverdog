@@ -1,4 +1,4 @@
-console.log('Filter Running...');
+console.log('SilverDog filter is Running...');
 
 let or_connect = AudioNode.prototype.connect; // NOTE: Keep original connect method
 let filtrs = new Array; // NOTE: Store filters
