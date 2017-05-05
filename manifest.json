@@ -27,7 +27,9 @@
   ],
   "permissions": [
     "storage",
-    "tabs"
+    "tabs",
+    "activeTab",
+    "<all_urls>"
   ],
   "icons": {
     "128": "icon.png"
