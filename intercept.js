@@ -1,7 +1,9 @@
 console.log('SilverDog filter is Running...');
 
-let or_connect = AudioNode.prototype.connect; // NOTE: Keep original connect method
-let filtrs = new Array; // NOTE: Store filters
+var or_connect = AudioNode.prototype.connect;
+var filtrs = new Array;
+var audio_elements = document.getElementsByTagName('audio');
+var video_elements = document.getElementsByTagName('video');
 
 function create_filter(context) {
 	let biquadFilter = context.createBiquadFilter();
@@ -26,9 +28,6 @@ AudioNode.prototype.connect = function () {
 		or_connect.apply(this, arguments);
 	}
 };
-
-let audio_elements = document.getElementsByTagName('audio');
-let video_elements = document.getElementsByTagName('video');
 
 if (audio_elements.length > 0 || video_elements.length > 0) {
 	let c0nt3x7 = new (window.AudioContext || window.webkitAudioContext);
