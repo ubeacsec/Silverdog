@@ -3,7 +3,7 @@ let isEnabled = false;
 function toggleState() {
   isEnabled = !isEnabled;
   chrome.browserAction.setIcon({ path: isEnabled ? 'icon_enabled.png' : 'icon_disabled.png' });
-  console.log(`SilverDog is now globally ${isEnabled ? 'Enabled' : 'Disabled'}.`);
+  console.log(`SilverDog is now globally ${isEnabled ? 'enabled' : 'disabled'}.`);
 }
 
 chrome
@@ -27,7 +27,7 @@ chrome
   .addListener(function () {
     chrome
       .tabs
-      .executeScript(null, { file: 'intercept.js' });
+      .executeScript(null, { file: 'content.js' });
   });
 
 toggleState();

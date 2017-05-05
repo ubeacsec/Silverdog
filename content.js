@@ -1,42 +1,77 @@
-function createScript(property, source) {
-  let scriptElement = document.createElement('script');
-  scriptElement['property'] = source;
-  return scriptElement;
-}
+(function () {
+  var extensionName = 'SilverDog';
 
-function injectScript(script) {
-  (document.head || document.documentElement).appendChild(script);
-}
+  var orConnect = AudioNode.prototype.connect;
+  var filteredSources = [];
+  var filters = [];
 
-chrome
-  .runtime
-  .sendMessage({ msg: 'getStatus' }, function (response) {
-    if (response.status) {
-      let storage = chrome.storage.local;
-      storage.get(['type', 'freq', 'q', 'gain'], function (items) {
+  chrome
+    .runtime
+    .sendMessage({ msg: 'getStatus' }, function (response) {
+      if (response.status) {
+        console.log(`${extensionName}: Looking for audio elements...`);
 
-        type = items.type || 'highshelf';
-        freq = items.freq || '17999';
-        q = items.q || '0';
-        gain = items.gain || '-70';
+        let audioElements = document.getElementsByTagName('audio');
+        Array.from(audioElements).forEach(createAndConnectSource, audioElements);
 
-        let actualCode = `
-          var st_type = '${type}',
-            st_freq = '${freq}',
-            st_q = '${q}',
-            st_gain = '${gain}';
-          console.log('Settings loaded...');
-        `;
+        let videoElements = document.getElementsByTagName('video');
+        Array.from(videoElements).forEach(createAndConnectSource, videoElements);
+      }
+    });
 
-        let script = createScript('textConetent', actualCode);
-        injectScript(script);
-        script.parentNode.removeChild(script);
-      });
+  function createAndConnectSource(element, i) {
+    if (!filteredSources.includes(this[i].src)) {
+      let windowContext = new (window.AudioContext || window.webkitAudioContext);
 
-      let script = createScript('src', chrome.extension.getURL('intercept.js'));
-      script.onload = function () {
-        this.parentNode.removeChild(this);
-      };
-      injectScript(script);
+      console.log(`${extensionName}: A new audio element has been found.`);
+      console.log(this[i].src);
+
+      // NOTE: Each time the `chrome.tabs.onUpdated` fires an event, the content.js file
+      // is reinjected to the same tab. While there are multiple instances of this file
+      // injected to the tab, the different instances do not access eacothers data.
+      // None knows which source is filtered and which isn't — yet.
+      // As a temporary solution, a `try {..} catch(err) {..}` statement is implemented
+      // to avoid the tons of errors this would generate.
+      try {
+        windowContext
+          .createMediaElementSource(this[i])
+          .connect(windowContext.destination);
+      } catch(err) {
+        console.log(`${extensionName}: Audio element could not be filtered. Possible, that it is already filtered.`);
+      }
+
+      filteredSources.push(this[i].src);
+
     }
-  });
+  }
+
+  function createFilter(context) {
+    let biquadFilter = context.createBiquadFilter();
+
+    let storage = chrome.storage.local;
+    storage.get(['type', 'freq', 'q', 'gain'], function (items) {
+      biquadFilter.type = items.type || 'highshelf';
+      biquadFilter.frequency.value = items.freq || '17999';
+      biquadFilter.Q.value = items.q || '0';
+      biquadFilter.gain.value = items.gain || '-70';
+    });
+
+    return biquadFilter;
+  }
+
+  AudioNode.prototype.connect = function () {
+    let name = arguments[0].toString();
+
+    if (name.indexOf('AudioDestinationNode') > -1) {
+      let filter = createFilter(arguments[0].context);
+      filters.push(filter);
+
+      orConnect.apply(this, [filters[filters.length - 1], arguments[1], arguments[2]]);
+      orConnect.apply(filter, [arguments[0], arguments[1], arguments[2]]);
+
+      console.log(`${extensionName}: Ultrasound audio filter added.`);
+    } else {	
+      orConnect.apply(this, arguments);
+    }
+  };
+})();
