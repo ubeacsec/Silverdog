@@ -10,13 +10,13 @@ chrome
         q = items.q || '0';
         gain = items.gain || '-70';
 
-        var actualCode = [
-          'var st_type ="' + type + '"',
-          'var st_freq =' + freq,
-          'var st_q =' + q,
-          'var st_gain =' + gain,
-          'console.log("Settings loaded...");'
-        ].join('\n');
+        var actualCode = `
+          var st_type = '${type}',
+          st_freq = '${freq}',
+          st_q = '${q}',
+          st_gain = '${gain}';
+          console.log('Settings loaded...');
+        `;
 
         var script = document.createElement('script');
         script.textContent = actualCode;
