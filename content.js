@@ -32,11 +32,11 @@
   }
 
   function createAndConnectSource(element, i) {
-    if (!filteredSources.includes(this[i].src)) {
+    if (!filteredSources.includes(this[i])) {
       let windowContext = new (window.AudioContext || window.webkitAudioContext);
 
       console.log(`${extensionName}: A new audio element has been found.`);
-      console.log(this[i].src);
+      console.log(this[i]);
 
       // NOTE: Each time the `chrome.tabs.onUpdated` fires an event, the content.js file
       // is reinjected to the same tab. While there are multiple instances of this file
@@ -52,8 +52,7 @@
         console.log(`${extensionName}: Audio element could not be filtered. Possible, that it is already filtered.`);
       }
 
-      filteredSources.push(this[i].src);
-
+      filteredSources.push(this[i]);
     }
   }
 
