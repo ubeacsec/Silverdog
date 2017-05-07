@@ -1,9 +1,8 @@
 (function () {
-  var extensionName = 'SilverDog';
-
-  var orConnect = AudioNode.prototype.connect;
-  var filteredSources = [];
-  var filters = [];
+  const extensionName = 'SilverDog';
+  let orConnect = AudioNode.prototype.connect,
+    filteredSources = [],
+    filters = [];
 
   /**
    * Fire initial call.
