@@ -20,6 +20,9 @@ chrome
   .onClicked
   .addListener(toggleState);
 
+/**
+ * Handle initial requests from content sripts.
+ */
 chrome
   .runtime
   .onMessage
@@ -27,6 +30,9 @@ chrome
     notifyContent(sender.tab.id, request.sync);
   });
 
+/**
+ * Notify content sripts when content is updated.
+ */
 chrome
   .tabs
   .onUpdated

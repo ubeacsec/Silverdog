@@ -5,6 +5,9 @@
   var filteredSources = [];
   var filters = [];
 
+  /**
+   * Fire initial call.
+   */
   chrome
     .runtime
     .sendMessage({ sync: 'init' });
@@ -38,21 +41,17 @@
       console.log(`${extensionName}: A new audio element has been found.`);
       console.log(this[i]);
 
-      // NOTE: Each time the `chrome.tabs.onUpdated` fires an event, the content.js file
-      // is reinjected to the same tab. While there are multiple instances of this file
-      // injected to the tab, the different instances do not access eacothers data.
-      // None knows which source is filtered and which isn't — yet.
-      // As a temporary solution, a `try {..} catch(err) {..}` statement is implemented
-      // to avoid the tons of errors this would generate.
       try {
         windowContext
           .createMediaElementSource(this[i])
           .connect(windowContext.destination);
       } catch(err) {
-        console.log(`${extensionName}: Audio element could not be filtered. Possible, that it is already filtered.`);
+        console.log(`${extensionName}: Audio element could not be filtered.`);
       }
 
       filteredSources.push(this[i]);
+    } else {
+      console.log(`${extensionName}: Audio element has already been filtered.`);
     }
   }
 
