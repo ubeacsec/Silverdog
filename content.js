@@ -11,6 +11,8 @@
   };
 
   let connect = AudioNode.prototype.connect,
+    audioElements = document.getElementsByTagName('audio'),
+    videoElements = document.getElementsByTagName('video'),
     filteredSources = [],
     filters = [];
 
@@ -27,27 +29,26 @@
   chrome
     .runtime
     .onMessage
-    .addListener(function (request, sender, sendResponse) {
-      if (request.state) {
-        if (request.sync === 'init') {
-          log(extensionStatus['init']);
-        }
-        log(extensionStatus['search']);
-        searchForAudioContent();
-      } else {
-        log(extensionStatus['disabled']);
+    .addListener(handleRequest);
+
+  function handleRequest(request, sender, sendResponse) {
+    if (request.state) {
+      if (request.sync === 'init') {
+        log(extensionStatus['init']);
       }
-    });
+
+      log(extensionStatus['search']);
+      Array.from(audioElements).forEach(createAndConnectSource, audioElements);
+      Array.from(videoElements).forEach(createAndConnectSource, videoElements);
+
+    } else {
+      log(extensionStatus['disabled']);
+
+    }
+  }
 
   function log(status) {
     console.log(`${extensionName}: ${status}`);
-  }
-
-  function searchForAudioContent() {
-    let audioElements = document.getElementsByTagName('audio');
-    Array.from(audioElements).forEach(createAndConnectSource, audioElements);
-    let videoElements = document.getElementsByTagName('video');
-    Array.from(videoElements).forEach(createAndConnectSource, videoElements);
   }
 
   function createAndConnectSource(element, i) {
