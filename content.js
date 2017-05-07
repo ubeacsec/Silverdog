@@ -7,17 +7,29 @@
 
   chrome
     .runtime
-    .sendMessage({ msg: 'getStatus' }, function (response) {
-      if (response.status) {
+    .sendMessage({ sync: 'init' });
+
+  /**
+   * Sign up for messaged from the background script.
+   */
+  chrome
+    .runtime
+    .onMessage
+    .addListener(function (request, sender, sendResponse) {
+      if (request.state) {
         console.log(`${extensionName}: Looking for audio elements...`);
-
-        let audioElements = document.getElementsByTagName('audio');
-        Array.from(audioElements).forEach(createAndConnectSource, audioElements);
-
-        let videoElements = document.getElementsByTagName('video');
-        Array.from(videoElements).forEach(createAndConnectSource, videoElements);
+        searchForAudioContent();
+      } else {
+        console.log(`${extensionName}: Extension is currently disabled.`);
       }
     });
+
+  function searchForAudioContent() {
+    let audioElements = document.getElementsByTagName('audio');
+    Array.from(audioElements).forEach(createAndConnectSource, audioElements);
+    let videoElements = document.getElementsByTagName('video');
+    Array.from(videoElements).forEach(createAndConnectSource, videoElements);
+  }
 
   function createAndConnectSource(element, i) {
     if (!filteredSources.includes(this[i].src)) {

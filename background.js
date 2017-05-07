@@ -6,6 +6,15 @@ function toggleState() {
   console.log(`SilverDog is now globally ${isEnabled ? 'enabled' : 'disabled'}.`);
 }
 
+function notifyContent(tabId, source) {
+  chrome
+    .tabs
+    .sendMessage(tabId, {
+      sync: source,
+      state: isEnabled
+    });
+}
+
 chrome
   .browserAction
   .onClicked
@@ -15,19 +24,14 @@ chrome
   .runtime
   .onMessage
   .addListener(function (request, sender, sendResponse) {
-    if (request.msg === 'getStatus') {
-      sendResponse({ status: isEnabled });
-      return true;
-    }
+    notifyContent(sender.tab.id, request.sync);
   });
 
 chrome
   .tabs
   .onUpdated
-  .addListener(function () {
-    chrome
-      .tabs
-      .executeScript(null, { file: 'content.js' });
+  .addListener(function (tabId) {
+    notifyContent(tabId, 'onUpdate');
   });
 
 toggleState();
