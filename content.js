@@ -1,6 +1,16 @@
 (function () {
   const extensionName = 'SilverDog';
-  let orConnect = AudioNode.prototype.connect,
+  const extensionStatus = {
+    init: 'The extension is enabled.',
+    disabled: 'The extension is currently disabled.',
+    search: 'Looking for audio elements...',
+    audio: 'A new audio element has been found.',
+    error: 'Audio element could not be filtered.',
+    filtered: 'Audio element has already been filtered.',
+    filter: 'Ultrasound audio filter added.'
+  };
+
+  let connect = AudioNode.prototype.connect,
     filteredSources = [],
     filters = [];
 
@@ -19,12 +29,19 @@
     .onMessage
     .addListener(function (request, sender, sendResponse) {
       if (request.state) {
-        console.log(`${extensionName}: Looking for audio elements...`);
+        if (request.sync === 'init') {
+          log(extensionStatus['init']);
+        }
+        log(extensionStatus['search']);
         searchForAudioContent();
       } else {
-        console.log(`${extensionName}: Extension is currently disabled.`);
+        log(extensionStatus['disabled']);
       }
     });
+
+  function log(status) {
+    console.log(`${extensionName}: ${status}`);
+  }
 
   function searchForAudioContent() {
     let audioElements = document.getElementsByTagName('audio');
@@ -37,7 +54,7 @@
     if (!filteredSources.includes(this[i])) {
       let windowContext = new (window.AudioContext || window.webkitAudioContext);
 
-      console.log(`${extensionName}: A new audio element has been found.`);
+      log(extensionStatus['audio']);
       console.log(this[i]);
 
       try {
@@ -45,12 +62,12 @@
           .createMediaElementSource(this[i])
           .connect(windowContext.destination);
       } catch(err) {
-        console.log(`${extensionName}: Audio element could not be filtered.`);
+        log(extensionStatus['error']);
       }
 
       filteredSources.push(this[i]);
     } else {
-      console.log(`${extensionName}: Audio element has already been filtered.`);
+      log(extensionStatus['filtered']);
     }
   }
 
@@ -75,12 +92,12 @@
       let filter = createFilter(arguments[0].context);
       filters.push(filter);
 
-      orConnect.apply(this, [filters[filters.length - 1], arguments[1], arguments[2]]);
-      orConnect.apply(filter, [arguments[0], arguments[1], arguments[2]]);
+      connect.apply(this, [filters[filters.length - 1], arguments[1], arguments[2]]);
+      connect.apply(filter, [arguments[0], arguments[1], arguments[2]]);
 
-      console.log(`${extensionName}: Ultrasound audio filter added.`);
+      log(extensionStatus['filter']);
     } else {	
-      orConnect.apply(this, arguments);
+      connect.apply(this, arguments);
     }
   };
 })();
