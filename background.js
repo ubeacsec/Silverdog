@@ -1,43 +1,51 @@
 let isEnabled = false;
 
-function toggleState() {
-  isEnabled = !isEnabled;
-  chrome.browserAction.setIcon({ path: isEnabled ? 'icon_enabled.png' : 'icon_disabled.png' });
-  console.log(`SilverDog is now globally ${isEnabled ? 'enabled' : 'disabled'}.`);
-}
+  /**
+   * Method to toggle the state of the extension.
+   */
+  function toggleState() {
+    isEnabled = !isEnabled;
+    chrome.browserAction.setIcon({ path: isEnabled ? 'icon_enabled.png' : 'icon_disabled.png' });
+    console.log(`SilverDog is now globally ${isEnabled ? 'enabled' : 'disabled'}.`);
+  }
 
-function notifyContent(tabId, source) {
-  chrome
-    .tabs
-    .sendMessage(tabId, {
-      sync: source,
-      state: isEnabled
-    });
-}
+  /**
+   * Method to notify the content script.
+   * @param {number} tabId The id of the the notification is intended to.
+   * @param {string} origin The origin of the notification.
+   */
+  function notifyContent(tabId, origin) {
+    chrome
+      .tabs
+      .sendMessage(tabId, {
+        origin: origin,
+        state: isEnabled
+      });
+  }
 
 chrome
   .browserAction
   .onClicked
   .addListener(toggleState);
 
-/**
- * Handle initial requests from content sripts.
- */
-chrome
-  .runtime
-  .onMessage
-  .addListener(function (request, sender, sendResponse) {
-    notifyContent(sender.tab.id, request.sync);
-  });
+  /**
+   * Handle messages from content sripts.
+   */
+  chrome
+    .runtime
+    .onMessage
+    .addListener(function (message, sender) {
+      notifyContent(sender.tab.id, message.origin);
+    });
 
-/**
- * Notify content sripts when content is updated.
- */
-chrome
-  .tabs
-  .onUpdated
-  .addListener(function (tabId) {
-    notifyContent(tabId, 'onUpdate');
-  });
+  /**
+   * Notify content sripts when a tab is updated.
+   */
+  chrome
+    .tabs
+    .onUpdated
+    .addListener(function (tabId) {
+      notifyContent(tabId, 'backgroundScript');
+    });
 
 toggleState();

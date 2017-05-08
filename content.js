@@ -1,5 +1,6 @@
 (function () {
   const extensionName = 'SilverDog';
+
   const extensionStatus = {
     init: 'The extension is enabled.',
     disabled: 'The extension is currently disabled.',
@@ -17,40 +18,53 @@
     filters = [];
 
   /**
-   * Fire initial call.
+   * Send a bounce-back message to the background scrip at every frame.
+   * This will be sent back right away.
    */
   chrome
     .runtime
-    .sendMessage({ sync: 'init' });
+    .sendMessage({ origin: 'contentScript' });
 
   /**
-   * Sign up for messaged from the background script.
+   * Subscribe to messages from the background script.
    */
   chrome
     .runtime
     .onMessage
-    .addListener(handleRequest);
+    .addListener(handleMessage);
 
-  function handleRequest(request, sender, sendResponse) {
-    if (request.state) {
-      if (request.sync === 'init') {
+  /**
+   * Method to handle messages sent by the background script.
+   * @param {any} message A message object containing the origin and the current state.
+   */
+  function handleMessage(message) {
+    if (message.state) {
+      console.log(message);
+      if (message.origin === 'contentScript') {
         log(extensionStatus['init']);
       }
 
       log(extensionStatus['search']);
       Array.from(audioElements).forEach(createAndConnectSource, audioElements);
       Array.from(videoElements).forEach(createAndConnectSource, videoElements);
-
     } else {
       log(extensionStatus['disabled']);
-
     }
   }
 
-  function log(status) {
-    console.log(`${extensionName}: ${status}`);
+  /**
+   * Logger function
+   * @param {string} information The information to be logged to the console.
+   */
+  function log(information) {
+    console.log(`${extensionName}: ${information}`);
   }
 
+  /**
+   * Method to be called on each audio and video element, to add an audio filter.
+   * @param {node} element The current element of the iteration.
+   * @param {number} i The index of the current element.
+   */
   function createAndConnectSource(element, i) {
     if (!filteredSources.includes(this[i])) {
       let windowContext = new (window.AudioContext || window.webkitAudioContext);
