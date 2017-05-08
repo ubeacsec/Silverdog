@@ -30,7 +30,7 @@
     .addListener(toggleState);
 
   /**
-   * Handle messages from content sripts.
+   * Notify the content sript when it requests thats.
    */
   chrome
     .runtime
@@ -40,7 +40,7 @@
     });
 
   /**
-   * Notify content sripts when a tab is updated.
+   * Notify the content sript when a tab is updated.
    */
   chrome
     .tabs
