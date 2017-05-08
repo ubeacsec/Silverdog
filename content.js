@@ -40,15 +40,8 @@
   function handleMessage(message) {
     if (message.state) {
       console.log(message);
-      if (message.origin === 'contentScript') {
-        log(extensionStatus['init']);
-      }
-
-      log(extensionStatus['search']);
       Array.from(audioElements).forEach(createAndConnectSource, audioElements);
       Array.from(videoElements).forEach(createAndConnectSource, videoElements);
-    } else {
-      log(extensionStatus['disabled']);
     }
   }
 
@@ -81,8 +74,6 @@
       }
 
       filteredSources.push(this[i]);
-    } else {
-      log(extensionStatus['filtered']);
     }
   }
 
