@@ -1,4 +1,5 @@
-let isEnabled = false;
+(function () {
+  let isEnabled = false;
 
   /**
    * Method to toggle the state of the extension.
@@ -23,10 +24,10 @@ let isEnabled = false;
       });
   }
 
-chrome
-  .browserAction
-  .onClicked
-  .addListener(toggleState);
+  chrome
+    .browserAction
+    .onClicked
+    .addListener(toggleState);
 
   /**
    * Handle messages from content sripts.
@@ -48,4 +49,5 @@ chrome
       notifyContent(tabId, 'backgroundScript');
     });
 
-toggleState();
+  toggleState();
+})();
