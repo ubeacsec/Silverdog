@@ -3,7 +3,7 @@
 
   const detectionStatus = {
     audioFound: 'A new audio element has been found.',
-    audioFilter: 'Ultrasound audio filter added.',
+    audioFiltered: 'Ultrasound audio filter added.',
     error: 'Audio element could not be filtered.'
   };
 
