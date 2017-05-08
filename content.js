@@ -48,11 +48,12 @@
         windowContext
           .createMediaElementSource(this[i])
           .connect(windowContext.destination);
+        filteredSources.push(this[i]);
+
       } catch(err) {
         log(detectionStatus['error']);
-      }
 
-      filteredSources.push(this[i]);
+      }
     }
   }
 
