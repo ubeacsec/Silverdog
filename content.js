@@ -1,14 +1,10 @@
 (function () {
   const extensionName = 'SilverDog';
 
-  const extensionStatus = {
-    init: 'The extension is enabled.',
-    disabled: 'The extension is currently disabled.',
-    search: 'Looking for audio elements...',
-    audio: 'A new audio element has been found.',
-    error: 'Audio element could not be filtered.',
-    filtered: 'Audio element has already been filtered.',
-    filter: 'Ultrasound audio filter added.'
+  const detectionStatus = {
+    audioFound: 'A new audio element has been found.',
+    audioFilter: 'Ultrasound audio filter added.',
+    error: 'Audio element could not be filtered.'
   };
 
   let connect = AudioNode.prototype.connect,
@@ -18,20 +14,12 @@
     filters = [];
 
   /**
-   * Send a bounce-back message to the background scrip at every frame.
-   * This will be sent back right away.
+   * Logger method.
+   * @param {string} information The information to be logged to the console.
    */
-  chrome
-    .runtime
-    .sendMessage({ origin: 'contentScript' });
-
-  /**
-   * Subscribe to messages from the background script.
-   */
-  chrome
-    .runtime
-    .onMessage
-    .addListener(handleMessage);
+  function log(information) {
+    console.log(`${extensionName}: ${information}`);
+  }
 
   /**
    * Method to handle messages sent by the background script.
@@ -39,18 +27,9 @@
    */
   function handleMessage(message) {
     if (message.state) {
-      console.log(message);
       Array.from(audioElements).forEach(createAndConnectSource, audioElements);
       Array.from(videoElements).forEach(createAndConnectSource, videoElements);
     }
-  }
-
-  /**
-   * Logger function
-   * @param {string} information The information to be logged to the console.
-   */
-  function log(information) {
-    console.log(`${extensionName}: ${information}`);
   }
 
   /**
@@ -62,7 +41,7 @@
     if (!filteredSources.includes(this[i])) {
       let windowContext = new (window.AudioContext || window.webkitAudioContext);
 
-      log(extensionStatus['audio']);
+      log(detectionStatus['audioFound']);
       console.log(this[i]);
 
       try {
@@ -70,13 +49,18 @@
           .createMediaElementSource(this[i])
           .connect(windowContext.destination);
       } catch(err) {
-        log(extensionStatus['error']);
+        log(detectionStatus['error']);
       }
 
       filteredSources.push(this[i]);
     }
   }
 
+  /**
+   * Method to create an audio filter.
+   * @param {AudioContext} context The audio context object.
+   * @returns {BiquadFilterNode} The audio filter.
+   */
   function createFilter(context) {
     let biquadFilter = context.createBiquadFilter();
 
@@ -101,9 +85,26 @@
       connect.apply(this, [filters[filters.length - 1], arguments[1], arguments[2]]);
       connect.apply(filter, [arguments[0], arguments[1], arguments[2]]);
 
-      log(extensionStatus['filter']);
+      log(detectionStatus['audioFiltered']);
     } else {	
       connect.apply(this, arguments);
     }
   };
+
+  /**
+   * Send a bounce-back message to the background scrip at every frame.
+   * This will be sent back right away.
+   */
+  chrome
+    .runtime
+    .sendMessage({ origin: 'contentScript' });
+
+  /**
+   * Subscribe to messages from the background script.
+   */
+  chrome
+    .runtime
+    .onMessage
+    .addListener(handleMessage);
+
 })();
