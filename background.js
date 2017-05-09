@@ -1,45 +1,33 @@
+let isEnabled = false;
 
-var active = true;
-
-
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if (request.msg == "getStatus") {
-        sendResponse({status: active});
-        return true;
-    }
-});
-
-function changeState() {
- if (active == false){
-	active = true;
-  } else if (active == true){
-	active = false;
-  }
-
-  setIcon();
+function toggleState() {
+  isEnabled = !isEnabled;
+  chrome.browserAction.setIcon({ path: isEnabled ? 'icon_enabled.png' : 'icon_disabled.png' });
+  console.log(`SilverDog is now globally ${isEnabled ? 'enabled' : 'disabled'}.`);
 }
 
+chrome
+  .browserAction
+  .onClicked
+  .addListener(toggleState);
 
-function setIcon() {
+chrome
+  .runtime
+  .onMessage
+  .addListener(function (request, sender, sendResponse) {
+    if (request.msg === 'getStatus') {
+      sendResponse({ status: isEnabled });
+      return true;
+    }
+  });
 
-  if (active == false){
-	chrome.browserAction.setIcon({path:"icon_disabled.png"});
+chrome
+  .tabs
+  .onUpdated
+  .addListener(function () {
+    chrome
+      .tabs
+      .executeScript(null, { file: 'content.js' });
+  });
 
-  } else if (active == true){
-	chrome.browserAction.setIcon({path:"icon_enabled.png"});
-  }
- }
- 
- 
- /////////////////////////
-
-
-chrome.browserAction.onClicked.addListener(changeState);
-
-
-chrome.tabs.onUpdated.addListener(function() {
-    chrome.tabs.executeScript(null, { file: "intercept.js" });
-});
-
-
-setIcon();
+toggleState();
